@@ -9,6 +9,7 @@ from matplotlib import rc
 from sklearn.model_selection import train_test_split
 from pandas.plotting import register_matplotlib_converters
 from sklearn.preprocessing import RobustScaler
+from sklearn.metrics import mean_squared_error
 
 def create_dataset(X, y, time_steps=1):
     Xs, ys = [], []
@@ -31,7 +32,7 @@ df['day_of_month'] = df.index.day
 df['day_of_week'] = df.index.dayofweek
 df['month'] = df.index.month
 
-train_size = int(len(df) * 0.9)
+train_size = int(len(df) * 0.8)
 test_size = len(df) - train_size
 train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(len(train), len(test))
@@ -58,6 +59,8 @@ X_train, y_train = create_dataset(train, train.cnt, time_steps)
 X_test, y_test = create_dataset(test, test.cnt, time_steps)
 print(X_train.shape, y_train.shape)
 
+print(X_train.shape[1])
+print(X_train.shape[2])
 
 model = keras.Sequential()
 model.add(
@@ -74,8 +77,8 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=10,
-    batch_size=32,
+    epochs=5,
+    batch_size=320,
     validation_split=0.1,
     shuffle=False
 )
@@ -86,9 +89,20 @@ plt.legend();
 
 y_pred = model.predict(X_test)
 
+
 y_train_inv = cnt_transformer.inverse_transform(y_train.reshape(1, -1))
 y_test_inv = cnt_transformer.inverse_transform(y_test.reshape(1, -1))
 y_pred_inv = cnt_transformer.inverse_transform(y_pred)
+
+# error = mean_squared_error(y_test,y_pred)
+# print('the mse is :: ', error)
+# print(y_test[:10])
+# print(y_pred[:10])
+
+error = mean_squared_error(y_test_inv.flatten(),y_pred_inv.flatten())
+print('the mse is :: ', error)
+print(y_test_inv.flatten()[:10])
+print(y_pred_inv.flatten()[:10])
 
 plt.plot(np.arange(0, len(y_train)), y_train_inv.flatten(), 'g', label="history")
 plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test_inv.flatten(), marker='.', label="true")
