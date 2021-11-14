@@ -31,8 +31,10 @@ tf.random.set_seed(RANDOM_SEED)
 time = np.arange(0, 100, 0.1)
 sin = np.sin(time) + np.random.normal(scale=0.5, size=len(time))
 
-plt.plot(time, sin, label='sine (with noise)');
-plt.legend();
+# plt.plot(time, sin, label='sine (with noise)');
+# plt.legend();
+# plt.show();
+
 
 df = pd.DataFrame(dict(sine=sin), index=time, columns=['sine'])
 df.head()
@@ -47,6 +49,9 @@ time_steps = 10
 X_train, y_train = create_dataset(train, train.sine, time_steps)
 X_test, y_test = create_dataset(test, test.sine, time_steps)
 print(X_train.shape, y_train.shape)
+
+print(X_train.shape[1])
+print(X_train.shape[2])
 
 model = keras.Sequential()
 model.add(keras.layers.LSTM(

@@ -17,9 +17,9 @@ def create_dataset(X, y, time_steps=1):
         ys.append(y.iloc[i + time_steps])
     return np.array(Xs), np.array(ys)
 
-df = pd.read_csv('spx.csv', parse_dates=['date'], index_col='date')
+df = pd.read_csv('data.csv', parse_dates=['date'], index_col='date')
 
-train_size = int(len(df) * 0.95)
+train_size = int(len(df) * 0.90)
 test_size = len(df) - train_size
 train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(train.shape, test.shape)
@@ -29,7 +29,7 @@ scaler = scaler.fit(train[['close']])
 train['close'] = scaler.transform(train[['close']])
 test['close'] = scaler.transform(test[['close']])
 
-TIME_STEPS = 30
+TIME_STEPS = 10
 # reshape to [samples, time_steps, n_features]
 X_train, y_train = create_dataset(
   train[['close']],
@@ -66,7 +66,7 @@ model.compile(loss='mae', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=10,
+    epochs=2,
     batch_size=320,
     validation_split=0.1,
     shuffle=False
@@ -75,7 +75,7 @@ history = model.fit(
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
 
-THRESHOLD = 0.9
+THRESHOLD = 0.65
 
 X_test_pred = model.predict(X_test)
 test_mae_loss = np.mean(np.abs(X_test_pred - X_test), axis=1)
