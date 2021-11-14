@@ -59,8 +59,8 @@ X_train, y_train = create_dataset(train, train.cnt, time_steps)
 X_test, y_test = create_dataset(test, test.cnt, time_steps)
 print(X_train.shape, y_train.shape)
 
-print(X_train.shape[1])
-print(X_train.shape[2])
+# print(X_train.shape[1])
+# print(X_train.shape[2])
 
 model = keras.Sequential()
 model.add(
@@ -77,7 +77,7 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=5,
+    epochs=30,
     batch_size=320,
     validation_split=0.1,
     shuffle=False

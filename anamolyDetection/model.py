@@ -19,7 +19,7 @@ def create_dataset(X, y, time_steps=1):
 
 df = pd.read_csv('spx.csv', parse_dates=['date'], index_col='date')
 
-train_size = int(len(df) * 0.8)
+train_size = int(len(df) * 0.95)
 test_size = len(df) - train_size
 train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(train.shape, test.shape)
@@ -66,8 +66,8 @@ model.compile(loss='mae', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=1,
-    batch_size=32,
+    epochs=10,
+    batch_size=320,
     validation_split=0.1,
     shuffle=False
 )
@@ -75,7 +75,7 @@ history = model.fit(
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
 
-THRESHOLD = 0.65
+THRESHOLD = 0.9
 
 X_test_pred = model.predict(X_test)
 test_mae_loss = np.mean(np.abs(X_test_pred - X_test), axis=1)
@@ -86,4 +86,27 @@ test_score_df['threshold'] = THRESHOLD
 test_score_df['anomaly'] = test_score_df.loss > test_score_df.threshold
 test_score_df['close'] = test[TIME_STEPS:].close
 
+# plt.plot(test_score_df.index, test_score_df.loss, label='loss')
+# plt.plot(test_score_df.index, test_score_df.threshold, label='threshold')
+# plt.xticks(rotation=25)
+# plt.legend();
+# plt.show();
+
 anomalies = test_score_df[test_score_df.anomaly == True]
+
+plt.plot(
+  test[TIME_STEPS:].index, 
+  scaler.inverse_transform(test[TIME_STEPS:].close), 
+  label='close price'
+);
+
+sns.scatterplot(
+  anomalies.index,
+  scaler.inverse_transform(anomalies.close),
+  color=sns.color_palette()[3],
+  s=52,
+  label='anomaly'
+)
+plt.xticks(rotation=25)
+plt.legend();
+plt.show();
