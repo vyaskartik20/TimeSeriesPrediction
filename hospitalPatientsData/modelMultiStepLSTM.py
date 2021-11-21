@@ -1,4 +1,5 @@
-# split into standard weeks
+
+# univariate multi-step lstm
 from math import sqrt
 import numpy as np
 from numpy import split
@@ -123,11 +124,11 @@ def split_dataset(data):
 dataset = read_csv('salesdaily.csv', header=0, infer_datetime_format=True, parse_dates=['datum'], index_col=['datum'])
 train, test = split_dataset(dataset.values)
 # validate train data
-print(train.shape)
-print(train[0, 0, 0], train[-1, -1, 0])
-# validate test
-print(test.shape)
-print(test[0, 0, 0], test[-1, -1, 0])
+# print(train.shape)
+# print(train[0, 0, 0], train[-1, -1, 0])
+# # validate test
+# print(test.shape)
+# print(test[0, 0, 0], test[-1, -1, 0])
 
 # evaluate model and get scores
 n_input = 14
