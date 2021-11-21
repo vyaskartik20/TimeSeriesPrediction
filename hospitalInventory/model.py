@@ -18,6 +18,7 @@ def create_dataset(X, y, time_steps=1):
     return np.array(Xs), np.array(ys)
 
 df = pd.read_csv('data.csv', parse_dates=['date'], index_col='date')
+print(df.head())
 
 train_size = int(len(df) * 0.90)
 test_size = len(df) - train_size
