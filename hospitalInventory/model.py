@@ -8,6 +8,11 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 from pandas.plotting import register_matplotlib_converters
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import RobustScaler
+
+
+from pandas import read_csv
+from matplotlib import pyplot
 
 def create_dataset(X, y, time_steps=1):
     Xs, ys = [], []
@@ -18,17 +23,37 @@ def create_dataset(X, y, time_steps=1):
     return np.array(Xs), np.array(ys)
 
 df = pd.read_csv('data.csv', parse_dates=['date'], index_col='date')
-print(df.head())
+# print(df.head())
+
+# series = read_csv('data.csv', header=0, index_col=0, parse_dates=True, squeeze=True)
+# series.plot()
+# pyplot.show()
+
 
 train_size = int(len(df) * 0.90)
 test_size = len(df) - train_size
 train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(train.shape, test.shape)
 
+# scaler1 = RobustScaler()
+# scaler1 = scaler1.fit(train[['close']])
+# train['close'] = scaler1.transform(train[['close']])
+# test['close'] = scaler1.transform(test[['close']])
+
 scaler = StandardScaler()
 scaler = scaler.fit(train[['close']])
 train['close'] = scaler.transform(train[['close']])
 test['close'] = scaler.transform(test[['close']])
+
+# print('shapes')
+# print()
+# print()
+# print(train[['close']].shape)
+# print(train.close.shape)
+# print()
+# print()
+
+
 
 TIME_STEPS = 10
 # reshape to [samples, time_steps, n_features]
@@ -67,7 +92,7 @@ model.compile(loss='mae', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=2,
+    epochs=20,
     batch_size=320,
     validation_split=0.1,
     shuffle=False
@@ -76,7 +101,7 @@ history = model.fit(
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
 
-THRESHOLD = 0.65
+THRESHOLD = 0.7
 
 X_test_pred = model.predict(X_test)
 test_mae_loss = np.mean(np.abs(X_test_pred - X_test), axis=1)
