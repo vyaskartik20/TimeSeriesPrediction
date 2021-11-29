@@ -6,7 +6,7 @@ import seaborn as sns
 from pylab import rcParams
 import matplotlib.pyplot as plt
 from matplotlib import rc
-
+from sklearn.metrics import mean_squared_error
 
 def create_dataset(X, y, time_steps=1):
     Xs, ys = [], []
@@ -31,9 +31,9 @@ tf.random.set_seed(RANDOM_SEED)
 time = np.arange(0, 100, 0.1)
 sin = np.sin(time) + np.random.normal(scale=0.5, size=len(time))
 
-# plt.plot(time, sin, label='sine (with noise)');
-# plt.legend();
-# plt.show();
+plt.plot(time, sin, label='sine (with noise)');
+plt.legend();
+plt.show();
 
 
 df = pd.DataFrame(dict(sine=sin), index=time, columns=['sine'])
@@ -66,14 +66,17 @@ model.compile(
 
 history = model.fit(
     X_train, y_train,
-    epochs=10,
-    batch_size=16,
+    epochs=100,
+    batch_size=256,
     validation_split=0.1,
     verbose=1,
     shuffle=False
 )
 
 y_pred = model.predict(X_test)
+
+error = mean_squared_error(y_test,y_pred)
+print('the mse is :: ', error)
 
 plt.plot(y_test, marker='.', label="true")
 plt.plot(y_pred, 'r', label="prediction")

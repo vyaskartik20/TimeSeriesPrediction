@@ -38,15 +38,15 @@ train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(len(train), len(test))
 
 
-f_columns = ['t1', 't2', 'hum', 'wind_speed']
-f_transformer = RobustScaler()
-f_transformer = f_transformer.fit(train[f_columns].to_numpy())
-train.loc[:, f_columns] = f_transformer.transform(
-  train[f_columns].to_numpy()
-)
-test.loc[:, f_columns] = f_transformer.transform(
-  test[f_columns].to_numpy()
-)
+# f_columns = ['t1', 't2', 'hum', 'wind_speed']
+# f_transformer = RobustScaler()
+# f_transformer = f_transformer.fit(train[f_columns].to_numpy())
+# train.loc[:, f_columns] = f_transformer.transform(
+#   train[f_columns].to_numpy()
+# )
+# test.loc[:, f_columns] = f_transformer.transform(
+#   test[f_columns].to_numpy()
+# )
 
 cnt_transformer = RobustScaler()
 cnt_transformer = cnt_transformer.fit(train[['cnt']])

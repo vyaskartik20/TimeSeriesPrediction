@@ -75,13 +75,13 @@ print(X_train.shape[2])
 
 model = keras.Sequential()
 model.add(keras.layers.LSTM(
-    units=64,
+    units=256,
     input_shape=(X_train.shape[1], X_train.shape[2])
 ))
-model.add(keras.layers.Dropout(rate=0.2))
+model.add(keras.layers.Dropout(rate=0.1))
 model.add(keras.layers.RepeatVector(n=X_train.shape[1]))
-model.add(keras.layers.LSTM(units=64, return_sequences=True))
-model.add(keras.layers.Dropout(rate=0.2))
+model.add(keras.layers.LSTM(units=256, return_sequences=True))
+model.add(keras.layers.Dropout(rate=0.1))
 model.add(
   keras.layers.TimeDistributed(
     keras.layers.Dense(units=X_train.shape[2])
