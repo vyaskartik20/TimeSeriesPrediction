@@ -6,6 +6,7 @@ from numpy import array
 from pandas import read_csv
 from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Flatten
@@ -80,20 +81,23 @@ def build_model(train, n_input):
 	# prepare data
 	train_x, train_y = to_supervised(train, n_input)
 	# define parameters
-	verbose, epochs, batch_size = 0, 10, 16
+	verbose, epochs, batch_size = 1, 30, 256
 	n_timesteps, n_features, n_outputs = train_x.shape[1], train_x.shape[2], train_y.shape[1]
 	# reshape output into [samples, timesteps, features]
 	train_y = train_y.reshape((train_y.shape[0], train_y.shape[1], 1))
 	# define model
 	model = Sequential()
-	model.add(LSTM(200, activation='relu', input_shape=(n_timesteps, n_features)))
+	model.add(LSTM(200, activation='relu', input_shape=(n_timesteps, n_features),  return_sequences=True))
+	model.add(LSTM(100, activation='relu', return_sequences=False))
 	model.add(RepeatVector(n_outputs))
+	model.add(LSTM(100, activation='relu', return_sequences=True))
 	model.add(LSTM(200, activation='relu', return_sequences=True))
 	model.add(TimeDistributed(Dense(100, activation='relu')))
 	model.add(TimeDistributed(Dense(1)))
 	model.compile(loss='mse', optimizer='adam')
+
 	# fit network
-	model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=verbose)
+	history = model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=verbose)
 	return model
  
 # evaluate a single model

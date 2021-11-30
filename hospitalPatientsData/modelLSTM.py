@@ -5,6 +5,7 @@ import numpy as np
 from numpy import split
 from numpy import array
 from pandas import read_csv
+from scipy.sparse import data
 from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot
 import tensorflow as tf
@@ -13,6 +14,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Flatten
 from keras.layers import LSTM
+from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import StandardScaler
 
 # summarize scores
 def summarize_scores(name, score, scores):
@@ -80,7 +83,7 @@ def build_model(train, n_input):
     # prepare data
     train_x, train_y = to_supervised(train, n_input)
     # define parameters
-    verbose, epochs, batch_size = 0, 20, 256
+    verbose, epochs, batch_size = 1, 70, 256
     n_timesteps, n_features, n_outputs = train_x.shape[1], train_x.shape[2], train_y.shape[1]
     # define model
     model = Sequential()
@@ -95,9 +98,11 @@ def build_model(train, n_input):
 # evaluate a single model
 def evaluate_model(train, test, n_input):
     # fit model
+    # print(train)
+    
     model = build_model(train, n_input)
-    model.save('models/mod')
-    model = keras.models.load_model('models/mod')
+    # model.save('models/mod')
+    # model = keras.models.load_model('models/mod')
     # history is a list of weekly data
     history = [x for x in train]
     # print(history)
@@ -116,32 +121,40 @@ def evaluate_model(train, test, n_input):
     score, scores = evaluate_forecasts(test[:, :, 0], predictions)
     # history = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
     # yhat_sequence = forecast(model, history, n_input)
-    # print('')    
-    # print('GAP')
-    # print(yhat_sequence)
-    # print('GAP') 
-    # print('')
     return score, scores
 
 
 # split a univariate dataset into train/test sets
 def split_dataset(data):
-	# split into standard weeks
-	train, test = data[3:1823], data[1823:2103]
-	# restructure into windows of weekly data
-	train = array(split(train, len(train)/7))
-	test = array(split(test, len(test)/7))
-	return train, test
+    # split into standard weeks
+    train, test = data[3:1823], data[1823:2103]
+    # restructure into windows of weekly data
+    
+    train = array(split(train, len(train)/7))
+    test = array(split(test, len(test)/7))
+
+
+    return train, test
 
 # load the new file
 dataset = read_csv('salesdaily.csv', header=0, infer_datetime_format=True, parse_dates=['datum'], index_col=['datum'])
-train, test = split_dataset(dataset.values)
+
+dataset = array(dataset.values)
+# print(dataset[:,0])
+
+# cnt_transformer = RobustScaler()
+# cnt_transformer = cnt_transformer.fit(dataset[['M01AB']])
+# dataset[:,0] = cnt_transformer.transform(dataset[['M01AB']])
+# print(dataset[:,0])
+
+train, test = split_dataset(dataset)
 # validate train data
 # print(train.shape)
 # print(train[0, 0, 0], train[-1, -1, 0])
 # # validate test
 # print(test.shape)
 # print(test[0, 0, 0], test[-1, -1, 0])
+
 
 # evaluate model and get scores
 n_input = 21

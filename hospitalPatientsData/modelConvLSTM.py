@@ -84,7 +84,7 @@ def build_model(train, n_steps, n_length, n_input):
 	# prepare data
 	train_x, train_y = to_supervised(train, n_input)
 	# define parameters
-	verbose, epochs, batch_size = 0, 8, 16
+	verbose, epochs, batch_size = 0, 20, 256
 	n_timesteps, n_features, n_outputs = train_x.shape[1], train_x.shape[2], train_y.shape[1]
 	# reshape into subsequences [samples, time steps, rows, cols, channels]
 	train_x = train_x.reshape((train_x.shape[0], n_steps, 1, n_length, n_features))
@@ -92,11 +92,11 @@ def build_model(train, n_steps, n_length, n_input):
 	train_y = train_y.reshape((train_y.shape[0], train_y.shape[1], 1))
 	# define model
 	model = Sequential()
-	model.add(ConvLSTM2D(filters=64, kernel_size=(1,3), activation='relu', input_shape=(n_steps, 1, n_length, n_features)))
+	model.add(ConvLSTM2D(filters=128, kernel_size=(1,7), activation='relu', input_shape=(n_steps, 1, n_length, n_features)))
 	model.add(Flatten())
 	model.add(RepeatVector(n_outputs))
 	model.add(LSTM(200, activation='relu', return_sequences=True))
-	model.add(TimeDistributed(Dense(100, activation='relu')))
+	model.add(TimeDistributed(Dense(200, activation='relu')))
 	model.add(TimeDistributed(Dense(1)))
 	model.compile(loss='mse', optimizer='adam')
 	# fit network

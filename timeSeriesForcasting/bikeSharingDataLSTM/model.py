@@ -38,15 +38,15 @@ train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 print(len(train), len(test))
 
 
-# f_columns = ['t1', 't2', 'hum', 'wind_speed']
-# f_transformer = RobustScaler()
-# f_transformer = f_transformer.fit(train[f_columns].to_numpy())
-# train.loc[:, f_columns] = f_transformer.transform(
-#   train[f_columns].to_numpy()
-# )
-# test.loc[:, f_columns] = f_transformer.transform(
-#   test[f_columns].to_numpy()
-# )
+f_columns = ['t1', 't2', 'hum', 'wind_speed']
+f_transformer = RobustScaler()
+f_transformer = f_transformer.fit(train[f_columns].to_numpy())
+train.loc[:, f_columns] = f_transformer.transform(
+  train[f_columns].to_numpy()
+)
+test.loc[:, f_columns] = f_transformer.transform(
+  test[f_columns].to_numpy()
+)
 
 cnt_transformer = RobustScaler()
 cnt_transformer = cnt_transformer.fit(train[['cnt']])
@@ -63,14 +63,7 @@ print(X_train.shape, y_train.shape)
 # print(X_train.shape[2])
 
 model = keras.Sequential()
-model.add(
-  keras.layers.Bidirectional(
-    keras.layers.LSTM(
-      units=128,
-      input_shape=(X_train.shape[1], X_train.shape[2])
-    )
-  )
-)
+model.add(keras.layers.LSTM(units=128, input_shape=(X_train.shape[1], X_train.shape[2])))
 model.add(keras.layers.Dropout(rate=0.2))
 model.add(keras.layers.Dense(units=1))
 model.compile(loss='mean_squared_error', optimizer='adam')
@@ -78,7 +71,7 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 history = model.fit(
     X_train, y_train,
     epochs=30,
-    batch_size=320,
+    batch_size=256,
     validation_split=0.1,
     shuffle=False
 )
@@ -94,15 +87,20 @@ y_train_inv = cnt_transformer.inverse_transform(y_train.reshape(1, -1))
 y_test_inv = cnt_transformer.inverse_transform(y_test.reshape(1, -1))
 y_pred_inv = cnt_transformer.inverse_transform(y_pred)
 
-# error = mean_squared_error(y_test,y_pred)
-# print('the mse is :: ', error)
+error = mean_squared_error(y_test,y_pred)
+print('the mse is :: ', error)
 # print(y_test[:10])
 # print(y_pred[:10])
 
+print('')
+print('')
+print('')
+
+
 error = mean_squared_error(y_test_inv.flatten(),y_pred_inv.flatten())
 print('the mse is :: ', error)
-print(y_test_inv.flatten()[:10])
-print(y_pred_inv.flatten()[:10])
+# print(y_test_inv.flatten()[:10])
+# print(y_pred_inv.flatten()[:10])
 
 plt.plot(np.arange(0, len(y_train)), y_train_inv.flatten(), 'g', label="history")
 plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test_inv.flatten(), marker='.', label="true")

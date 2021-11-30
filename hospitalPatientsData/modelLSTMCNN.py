@@ -82,13 +82,13 @@ def build_model(train, n_input):
 	# prepare data
 	train_x, train_y = to_supervised(train, n_input)
 	# define parameters
-	verbose, epochs, batch_size = 0, 10, 16
+	verbose, epochs, batch_size = 1, 10, 256
 	n_timesteps, n_features, n_outputs = train_x.shape[1], train_x.shape[2], train_y.shape[1]
 	# reshape output into [samples, timesteps, features]
 	train_y = train_y.reshape((train_y.shape[0], train_y.shape[1], 1))
 	# define model
 	model = Sequential()
-	model.add(Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(n_timesteps,n_features)))
+	model.add(Conv1D(filters=128, kernel_size=3, activation='relu', input_shape=(n_timesteps,n_features)))
 	model.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
 	model.add(MaxPooling1D(pool_size=2))
 	model.add(Flatten())
@@ -142,7 +142,7 @@ train, test = split_dataset(dataset.values)
 # print(test[0, 0, 0], test[-1, -1, 0])
 
 # evaluate model and get scores
-n_input = 14
+n_input = 21
 score, scores = evaluate_model(train, test, n_input)
 # summarize scores
 summarize_scores('lstm', score, scores)
