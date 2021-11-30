@@ -55,7 +55,7 @@ test['close'] = scaler.transform(test[['close']])
 
 
 
-TIME_STEPS = 10
+TIME_STEPS = 20
 # reshape to [samples, time_steps, n_features]
 X_train, y_train = create_dataset(
   train[['close']],
@@ -74,12 +74,11 @@ print(X_train.shape[2])
 
 
 model = keras.Sequential()
-model.add(keras.layers.LSTM(
-    units=256,
-    input_shape=(X_train.shape[1], X_train.shape[2])
-))
+model.add(keras.layers.LSTM( units=256, input_shape=(X_train.shape[1], X_train.shape[2]), return_sequences=True))
+model.add(keras.layers.LSTM(units=64, return_sequences=False))
 model.add(keras.layers.Dropout(rate=0.1))
 model.add(keras.layers.RepeatVector(n=X_train.shape[1]))
+model.add(keras.layers.LSTM(units=64, return_sequences=True))
 model.add(keras.layers.LSTM(units=256, return_sequences=True))
 model.add(keras.layers.Dropout(rate=0.1))
 model.add(
@@ -92,7 +91,7 @@ model.compile(loss='mae', optimizer='adam')
 
 history = model.fit(
     X_train, y_train,
-    epochs=20,
+    epochs=1,
     batch_size=320,
     validation_split=0.1,
     shuffle=False
@@ -100,6 +99,15 @@ history = model.fit(
 
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
+
+# sns.distplot(train_mae_loss, bins=50, kde=True);
+
+plt.hist(train_mae_loss, bins=50)
+
+# train_score_df = pd.DataFrame(index=train[TIME_STEPS:].index)
+# plt.plot(train_score_df.index, train_mae_loss, label='error')
+plt.legend();
+plt.show();
 
 THRESHOLD = 0.7
 
