@@ -67,6 +67,7 @@ model.add(keras.layers.LSTM(units=128, input_shape=(X_train.shape[1], X_train.sh
 model.add(keras.layers.Dropout(rate=0.2))
 model.add(keras.layers.Dense(units=1))
 model.compile(loss='mean_squared_error', optimizer='adam')
+model.summary()
 
 history = model.fit(
     X_train, y_train,

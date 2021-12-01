@@ -98,6 +98,7 @@ def build_model(train, n_input):
 	model.add(TimeDistributed(Dense(1)))
 	model.compile(loss='mse', optimizer='adam')
 	# fit network
+	model.summary()
 	model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=verbose)
 	return model
  
@@ -142,7 +143,7 @@ train, test = split_dataset(dataset.values)
 # print(test[0, 0, 0], test[-1, -1, 0])
 
 # evaluate model and get scores
-n_input = 21
+n_input = 14
 score, scores = evaluate_model(train, test, n_input)
 # summarize scores
 summarize_scores('lstm', score, scores)

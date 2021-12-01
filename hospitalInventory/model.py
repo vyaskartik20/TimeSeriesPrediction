@@ -86,6 +86,8 @@ model.add(
     keras.layers.Dense(units=X_train.shape[2])
   )
 )
+model.summary()
+
 model.compile(loss='mae', optimizer='adam')
 
 

@@ -91,6 +91,7 @@ def build_model(train, n_input):
     model.add(Dense(200, activation='relu'))
     model.add(Dense(n_outputs))
     model.compile(loss='mse', optimizer='adam')
+    model.summary()
     # fit network
     model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=verbose)
     return model

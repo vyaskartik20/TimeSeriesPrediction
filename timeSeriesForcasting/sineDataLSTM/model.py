@@ -63,10 +63,12 @@ model.compile(
   loss='mean_squared_error',
   optimizer=keras.optimizers.Adam(0.001)
 )
+model.summary()
+
 
 history = model.fit(
     X_train, y_train,
-    epochs=200,
+    epochs=20,
     batch_size=256,
     validation_split=0.1,
     verbose=1,

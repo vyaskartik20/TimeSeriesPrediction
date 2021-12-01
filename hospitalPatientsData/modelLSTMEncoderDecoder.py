@@ -95,7 +95,7 @@ def build_model(train, n_input):
 	model.add(TimeDistributed(Dense(100, activation='relu')))
 	model.add(TimeDistributed(Dense(1)))
 	model.compile(loss='mse', optimizer='adam')
-
+	model.summary()
 	# fit network
 	history = model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=verbose)
 	return model
